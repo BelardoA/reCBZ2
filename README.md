@@ -1,26 +1,29 @@
-# reCBZ - comic book repacker
+# reCBZ2 - comic book repacker
 
-### Abstract
+### Please note this was originally created from `avalonv` and can be found here: [reCBZ](https://github.com/avalonv/reCBZ)
+**reCBZ2** is a fork of the original reCBZ project, but since it was abandoned, I decided to continue it. The original project was created by `avalonv` and it's a tool to repack comic book archives (.cbz) into more efficient formats, such as WebP, and to convert them into fixed-layout EPUBs. It can also merge multiple files into a single volume, and perform various image operations, such as upscaling, downscaling, and desaturation.
 
-Originally, I created this to save disk space. I own a large digital manga library, which unsurprisingly uses a lot of space. This isn't really a problem most of the time, but it limits what I can put on my Kobo e-Reader (which has "only" 32GB of storage). I prefer to keep the original files intact on [Calibre](https://github.com/kovidgoyal/calibre) on my computer, but use this tool to optimize the .cbz files in bulk so they use less space on my Kobo.
+### Abstract from `avalonv`
 
-For example, by repacking with WebP with the default settings, this can cut the size of the first volume of Chainsaw Man from 180MB to just under 96MB, without affecting image quality. Over the 11 published volumes, that amounts to over 1GB saved (which is a lot when you consider many e-Readers still have only 4GB)! And that's without touching the resolution, the size can be further reduced by another 50MB by downscaling to the actual display resolution — easily tripling the amount of manga that can be stored on your device, while maintaining the same perceived quality. Simply put, the amount of pixels in most comics, and the compression used to store those pixels (or lack thereof), is usually overkill for the type of screens *I* read from, and this program attempts to rectify that by doing hundreds of simple but tedious image operations in just a few seconds.
-
-This now has a few other tricks up its sleeve which exist mainly to make the process of managing a manga library (a patchwork of individual chapters downloaded from dynastyscans) less frustrating, as well as supporting conversion to EPUBs, as the traditional tool for this, [KCC](https://github.com/ciromattia/kcc), has been unmaintained for some time (and is somewhat fiddly to install on Linux).
-
-In short, it can:
-
-- Upscale, downscale, desaturate, and convert comic book pages (or images in general).
-
-- Convert them to lossy or lossless formats.
-
-- Do this automatically to try to reduce disk space.
-
-- Combine multiple files into a single contiguous book (transform multiple chapters into a single volume).
-
-- Convert CBZ files into fixed-layout EPUBs, with support for most [Kindle](https://github.com/avalonv/reCBZ/wiki/Ebook-profiles#kindle) & [Kobo](https://github.com/avalonv/reCBZ/wiki/Ebook-profiles#kobo) devices.
-
-- Make your CPU fan spin really fast.
+> Originally, I created this to save disk space. I own a large digital manga library, which unsurprisingly uses a lot of space. This isn't really a problem most of the time, but it limits what I can put on my Kobo e-Reader (which has "only" 32GB of storage). I prefer to keep the original files intact on [Calibre](https://github.com/kovidgoyal/calibre) on my computer, but use this tool to optimize the .cbz files in bulk so they use less space on my Kobo.
+> 
+> For example, by repacking with WebP with the default settings, this can cut the size of the first volume of Chainsaw Man from 180MB to just under 96MB, without affecting image quality. Over the 11 published volumes, that amounts to over 1GB saved (which is a lot when you consider many e-Readers still have only 4GB)! And that's without touching the resolution, the size can be further reduced by another 50MB by downscaling to the actual display resolution — easily tripling the amount of manga that can be stored on your device, while maintaining the same perceived quality. Simply put, the amount of pixels in most comics, and the compression used to store those pixels (or lack thereof), is usually overkill for the type of screens *I* read from, and this program attempts to rectify that by doing hundreds of simple but tedious image operations in just a few seconds.
+> 
+> This now has a few other tricks up its sleeve which exist mainly to make the process of managing a manga library (a patchwork of individual chapters downloaded from dynastyscans) less frustrating, as well as supporting conversion to EPUBs, as the traditional tool for this, [KCC](https://github.com/ciromattia/kcc), has been unmaintained for some time (and is somewhat fiddly to install on Linux).
+> 
+> In short, it can:
+>
+> - Upscale, downscale, desaturate, and convert comic book pages (or images in general).
+>
+> - Convert them to lossy or lossless formats.
+>
+> - Do this automatically to try to reduce disk space.
+>
+> - Combine multiple files into a single contiguous book (transform multiple chapters into a single volume).
+>
+> - Convert CBZ files into fixed-layout EPUBs, with support for most [Kindle](https://github.com/avalonv/reCBZ/wiki/Ebook-profiles#kindle) & [Kobo](https://github.com/avalonv/reCBZ/wiki/Ebook-profiles#kobo) devices.
+>
+> - Make your CPU fan spin really fast.
 
 ## Install
 
@@ -36,13 +39,13 @@ If you're on the latest Python version (3.11), you may need to manually install 
 
 Linux, MacOS, and Windows:
 
-    python -m pip install reCBZ
+    python -m pip install reCBZ2
 
 or build from source:
 
-    git clone https://github.com/avalonv/reCBZ
+    git clone https://github.com/BelardoA/reCBZ2
 
-    python -m pip install -e reCBZ
+    python -m pip install -e reCBZ2
 
 
 ## Usage
