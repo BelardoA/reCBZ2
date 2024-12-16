@@ -22,6 +22,26 @@ SOURCE_NAME:str = 'Source'
 chapter_prefix:str = 'v' # :) :D C:
 
 
+def get_size_that_preserves_ratio(*, img_size, size_of_viewport):
+    # derived from https://pillow.readthedocs.io/en/stable/_modules/PIL/Image.html#Image.thumbnail (HPND)
+    import math
+    def round_aspect(number, key):
+        return max(min(math.floor(number), math.ceil(number), key=key), 1)
+
+    x, y = size_of_viewport
+
+    width, height = img_size
+
+    aspect = width / height
+    if x / y >= aspect:
+        x = round_aspect(y * aspect, key=lambda n: abs(aspect - n / y))
+    else:
+        y = round_aspect(
+            x / aspect, key=lambda n: 0 if n == 0 else abs(aspect - x / n)
+        )
+    return x, y
+
+
 def write_zip(savepath, chapters):
     new_zip = ZipFile(savepath,'w')
     lead_zeroes = len(str(len(chapters)))
@@ -126,13 +146,18 @@ def convert_page_worker(source, options, savedir=None):
         if page.landscape:
             new_size = new_size[::-1]
         n_width, n_height = new_size
+        if options['keep_ratio']:
+            resize_size = get_size_that_preserves_ratio(img_size=(width, height), size_of_viewport=new_size)
+            log_buff += f'|trans: keeping ratio: size changed from {(width, height)} to {resize_size}\n'
+        else:
+            resize_size = new_size
         # downscaling
         if (width > n_width and height > n_height
             and not options['nodown']):
-            img = img.resize((new_size), config.RESAMPLE_TYPE)
+            img = img.resize((resize_size), config.RESAMPLE_TYPE)
         # upscaling
         elif not options['noup']:
-            img = img.resize((new_size), config.RESAMPLE_TYPE)
+            img = img.resize((resize_size), config.RESAMPLE_TYPE)
 
     LossyFmt.quality = options['quality']
 
@@ -246,6 +271,7 @@ class ComicArchive():
         self._page_opt['format'] = get_format_class(config.img_format)
         self._page_opt['quality'] = config.img_quality
         self._page_opt['size'] = config.img_size
+        self._page_opt['keep_ratio'] = config.keep_ratio
         self._page_opt['grayscale'] = config.grayscale
         self._page_opt['noup'] = config.no_upscale
         self._page_opt['nodown'] = config.no_downscale
