@@ -1,0 +1,4 @@
+pillow>=9.1
+ebooklib>=0.18
+rich>=12.6
+click>=8.1.3

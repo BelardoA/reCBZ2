@@ -6,7 +6,7 @@ from multiprocessing import Pool
 from multiprocessing.pool import ThreadPool
 from re import split
 
-import reCBZ.config as config
+import reCBZ2.config as config
 
 
 class MPrunnerInterrupt(KeyboardInterrupt):
@@ -14,11 +14,11 @@ class MPrunnerInterrupt(KeyboardInterrupt):
 
 
 def shorten(*args, width=config.term_width()) -> str:
-    text = ' '.join(args)
-    return textwrap.shorten(text, width=width, placeholder='...')
+    text = " ".join(args)
+    return textwrap.shorten(text, width=width, placeholder="...")
 
 
-def mylog(msg:str, progress=False) -> None:
+def mylog(msg: str, progress=False) -> None:
     if config.loglevel == -1:
         return
     elif config.loglevel > 2:
@@ -26,29 +26,29 @@ def mylog(msg:str, progress=False) -> None:
     elif config.loglevel == 2 and not progress:
         print(msg, flush=True)
     elif config.loglevel == 1 and progress:
-        msg = '[*] ' + msg
+        msg = "[*] " + msg
         msg = shorten(msg)
-        print(msg, end='\n', flush=True)
+        print(msg, end="\n", flush=True)
     elif config.loglevel == 0 and progress:
         # no newline (i.e. overwrite line)
         # flush last first
-        print('[*]'.ljust(config.term_width()), end='\r')
-        msg = '[*] ' + msg
+        print("[*]".ljust(config.term_width()), end="\r")
+        msg = "[*] " + msg
         msg = shorten(msg)
-        print(msg, end='\r', flush=True)
+        print(msg, end="\r", flush=True)
 
 
 def human_sort(lst) -> list:
-    """ Sort the given iterable in the way that humans expect."""
+    """Sort the given iterable in the way that humans expect."""
     # https://stackoverflow.com/a/2669120/
     if not type(lst[0]) is str:
         lst = [str(i) for i in lst]
     convert = lambda text: int(text) if text.isdigit() else text
-    alphanum_key = lambda key: [convert(c) for c in split('([0-9]+)', key)]
-    return sorted(lst, key = alphanum_key)
+    alphanum_key = lambda key: [convert(c) for c in split("([0-9]+)", key)]
+    return sorted(lst, key=alphanum_key)
 
 
-def human_bytes(b:float) -> str:
+def human_bytes(b: float) -> str:
     # derived from https://github.com/x4nth055 (MIT)
     suffix = "B"
     FACTOR = 1024
@@ -59,7 +59,7 @@ def human_bytes(b:float) -> str:
     return f"{b:.2f}Y{suffix}"
 
 
-def pct_change(base:float, new:float) -> str:
+def pct_change(base: float, new: float) -> str:
     diff = new - base
     pct_change = diff / base * 100
     if pct_change >= 0:
@@ -84,12 +84,12 @@ def init_pool():
 def worker_sigint_CTRL_C(func):
     @wraps(func)
     def wrapper(*args, **kwargs):
-        if not 'ctrl_c_entered' in globals():
+        if not "ctrl_c_entered" in globals():
             # init_pool hasn't been called because we're not from mp_pool_manager
             # (i.e. single threaded)
             return func(*args, **kwargs)
         global ctrl_c_entered
-        if not ctrl_c_entered: # the default
+        if not ctrl_c_entered:  # the default
             signal.signal(signal.SIGINT, default_sigint_handler)
             try:
                 return func(*args, **kwargs)
@@ -100,6 +100,7 @@ def worker_sigint_CTRL_C(func):
                 signal.signal(signal.SIGINT, pool_CTRL_C_handler)
         else:
             return KeyboardInterrupt()
+
     return wrapper
 
 
@@ -113,7 +114,7 @@ def map_workers(func, tasks, multithread=False):
         with ThreadPool(processes=pcount) as Tpool:
             return Tpool.map(func, tasks)
     else:
-        if platform.system == 'windows':
+        if platform.system == "windows":
             # this hangs on Unix, but prevents hanging on Windows (insanity)
             # god bless https://stackoverflow.com/a/68695455/
             signal.signal(signal.SIGINT, signal.SIG_IGN)
