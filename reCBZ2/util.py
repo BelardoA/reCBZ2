@@ -4,6 +4,7 @@ import textwrap
 from functools import wraps
 from multiprocessing import Pool
 from multiprocessing.pool import ThreadPool
+from pathlib import Path
 from re import split
 
 import reCBZ2.config as config
@@ -126,3 +127,70 @@ def map_workers(func, tasks, multithread=False):
                 MPpool.terminate()
                 mylog("AND YOUR DAYS FEW")
                 raise MPrunnerInterrupt()
+
+
+def write_zip(save_path: str, chapters: list, chapter_prefix: str) -> str:
+    """
+    Write a .zip file from a list of chapters
+
+    :param str save_path: Path to the .zip file
+    :param list chapters: List of chapters, each containing a list of pages
+    :param str chapter_prefix: Prefix for the chapter folders
+    :return: Path to the .zip file
+    :rtype: str
+    """
+    from zipfile import ZipFile, ZIP_DEFLATED, ZIP_STORED
+
+    new_zip = ZipFile(save_path, "w")
+    lead_zeroes = len(str(len(chapters)))
+    for i, chapter in enumerate(chapters):
+        for page in chapter:
+
+            if len(chapters) > 1:  # no parent if there's only one chapter
+                dest = Path(f"{chapter_prefix}{i+1:0{lead_zeroes}d}") / page.rel_path
+            else:
+                dest = Path(page.rel_path)
+            mylog(f"ZIP: write '{page.name}' to {dest}")
+            if config.compress_zip:
+                new_zip.write(page.fp, dest, ZIP_DEFLATED, 9)
+            else:
+                new_zip.write(page.fp, dest, ZIP_STORED)
+    new_zip.comment = str.encode(config.ZIPCOMMENT)
+    new_zip.close()
+    return save_path
+
+
+def write_epub(save_path: str, chapters: list) -> str:
+    """
+    Write an .epub file from a list of chapters
+
+    :param str save_path: Path to the .epub file
+    :param list chapters: List of chapters, each containing a list of pages
+    :return: Path to the .epub file
+    :rtype: str
+    """
+    from itertools import chain
+    from reCBZ2 import epub
+
+    pages = list(chain(*chapters))
+    title = Path(save_path).stem
+    mylog(f"Write .epub: {title}.epub", progress=True)
+    if len(chapters) > 1:
+        save_path = epub.multi_chapter_epub(title, chapters)
+    else:
+        save_path = epub.single_chapter_epub(title, pages)
+    # TODO: compress the .epub file if enabled in config
+    # if Config.compress_zip:
+    #     ZipFile(savepath, mode='w', compression=ZIP_DEFLATED, compresslevel=9).write(savepath)
+    return save_path
+
+
+# TODO: not used right now, implement or delete?
+def write_mobi(savepath, chapters):
+    import subprocess
+
+    try:
+        subprocess.run(["kindlegen", "", "/dev/null"], capture_output=True)
+    except FileNotFoundError:
+        raise OSError("'kindlegen' can't be found. is it installed and in PATH?")
+    pass

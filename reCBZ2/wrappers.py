@@ -2,10 +2,11 @@ import re
 import time
 from pathlib import Path
 
+from PIL import UnidentifiedImageError
+
 import reCBZ2 as reCBZ
 import reCBZ2.config as config
-from PIL import UnidentifiedImageError
-from reCBZ2.archive import ComicArchive
+from reCBZ2.models import ComicArchive
 from reCBZ2.util import human_bytes, pct_change, shorten, mylog
 
 actual_stem = ""
